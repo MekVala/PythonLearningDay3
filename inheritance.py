@@ -1,49 +1,57 @@
-#is-a relationship example
-
-class Dog:
-    # Class attribute
-    species = 'mammal'
-
-    # Initializer / Instance attributes
-    def __init__(self, name, age):
+class Student:
+    def __init__(self, name, student_number):
         self.name = name
-        self.age = age
-        self.is_hungry = True
+        self.student_number = student_number
+        self.classes = []
 
-    # Instance method
-    def description(self):
-        return self.name, self.age
-
-    # Instance method
-    def speak(self, sound):
-        return "%s says %s" % (self.name, sound)
-
-    # Instance method
-    def eat(self):
-        self.is_hungry = False
+    def enrol(self, course_running):
+        self.classes.append(course_running)
+        course_running.add_student(self)
 
 
-# Child class (inherits from Dog class)
-class RussellTerrier(Dog):
-	def run(self, speed):
-		return "%s runs %s" % (self.name, speed)
-	
-	def get_name(self):
-		return self.name
+class Department:
+    def __init__(self, name, department_code):
+        self.name = name
+        self.department_code = department_code
+        self.courses = {}
 
-		
-# Child class (inherits from Dog class)
-class Bulldog(Dog):
-	def run(self, speed):
-		return "%s runs %s" % (self.name, speed)
-	
-	def get_name(self):
-			return self.name
-	
-	
-d1 = RussellTerrier("Marty",5)
-print("%s is A Dog" %d1.get_name())
+    def add_course(self, description, course_code, credits):
+        self.courses[course_code] = Course(description, course_code, credits, self)
+        return self.courses[course_code]
 
-		
 
+class Course:
+    def __init__(self, description, course_code, credits, department):
+        self.description = description
+        self.course_code = course_code
+        self.credits = credits
+        self.department = department
+
+        self.runnings = []
+
+    def add_running(self, year):
+        self.runnings.append(CourseRunning(self, year))
+        return self.runnings[-1]
+
+
+class CourseRunning:
+    def __init__(self, course, year):
+        self.course = course
+        self.year = year
+        self.students = []
+
+    def add_student(self, student):
+        self.students.append(student)
+
+
+maths_dept = Department("Mathematics and Applied Mathematics", "MAM")
+mam1000w = maths_dept.add_course("Mathematics 1000", "MAM1000W", 1)
+mam1000w_2013 = mam1000w.add_running(2018)
+
+bob = Student("Bob", "Smith")
+bob.enrol(mam1000w_2013)
+
+print("%s Enrolled In Following Courses:" %bob.name)
+for x in bob.classes:
+	print("Course Desc:%s, Code:%s, Credit:%d" %(x.course.description,x.course.course_code,x.course.credits))
 
